@@ -25,6 +25,7 @@
     <ClInclude Include="..\OBJObject.h" />
     <ClInclude Include="..\shader.h" />
     <ClInclude Include="..\Window.h" />
+    <ClInclude Include="skybox.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Cube.cpp" />
@@ -33,6 +34,7 @@
     <ClCompile Include="..\OBJObject.cpp" />
     <ClCompile Include="..\shader.cpp" />
     <ClCompile Include="..\Window.cpp" />
+    <ClCompile Include="skybox.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\light_shader.frag" />
