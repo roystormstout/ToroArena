@@ -12,8 +12,11 @@
 #include <GLFW/glfw3.h>
 #include "Cube.h"
 #include "shader.h"
-#include "OBJObject.h"
-#include "Light.h"
+#include "skybox.h"
+#include "Node.h"
+#include "MatrixTransform.h"
+#include "Geometry.h"
+#include "Curve.h"
 
 class Window
 {
@@ -35,7 +38,7 @@ public:
 	static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 	static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 	static glm::vec3 trackBallMapping(glm::vec2 point);
-
+	static MatrixTransform * createBot(glm::mat4 matrix);
 };
 
 #endif

@@ -20,25 +20,29 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Cube.h" />
-    <ClInclude Include="..\Light.h" />
+    <ClInclude Include="..\Curve.h" />
+    <ClInclude Include="..\Geometry.h" />
     <ClInclude Include="..\main.h" />
-    <ClInclude Include="..\OBJObject.h" />
+    <ClInclude Include="..\MatrixTransform.h" />
+    <ClInclude Include="..\Node.h" />
+    <ClInclude Include="..\packages\stb-master\stb_image.h" />
     <ClInclude Include="..\shader.h" />
+    <ClInclude Include="..\skybox.h" />
     <ClInclude Include="..\Window.h" />
-    <ClInclude Include="skybox.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Cube.cpp" />
-    <ClCompile Include="..\Light.cpp" />
+    <ClCompile Include="..\Curve.cpp" />
+    <ClCompile Include="..\Geometry.cpp" />
     <ClCompile Include="..\main.cpp" />
-    <ClCompile Include="..\OBJObject.cpp" />
+    <ClCompile Include="..\MatrixTransform.cpp" />
     <ClCompile Include="..\shader.cpp" />
+    <ClCompile Include="..\skybox.cpp" />
     <ClCompile Include="..\Window.cpp" />
-    <ClCompile Include="skybox.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\light_shader.frag" />
-    <None Include="..\light_shader.vert" />
+    <None Include="..\skybox_shader.frag" />
+    <None Include="..\skybox_shader.vert" />
     <None Include="..\shader.frag" />
     <None Include="..\shader.vert" />
     <None Include="packages.config" />
