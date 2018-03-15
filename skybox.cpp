@@ -50,12 +50,12 @@ float skyboxVertices[] = {
 };
 
 std::vector<std::string> faces = {
-	"C:\\Users\\Lingfeng\\Desktop\\project3\\Skybox_Water222_right.ppm",
-	"C:\\Users\\Lingfeng\\Desktop\\project3\\Skybox_Water222_left.ppm",
-	"C:\\Users\\Lingfeng\\Desktop\\project3\\Skybox_Water222_top.ppm",
-	"C:\\Users\\Lingfeng\\Desktop\\project3\\Skybox_Water222_base.ppm",
-	"C:\\Users\\Lingfeng\\Desktop\\project3\\Skybox_Water222_front.ppm",
-	"C:\\Users\\Lingfeng\\Desktop\\project3\\Skybox_Water222_back.ppm"
+	"C:\\Users\\Lingfeng\\Desktop\\arrakisday\\right.ppm",
+	"C:\\Users\\Lingfeng\\Desktop\\arrakisday\\left.ppm",
+	"C:\\Users\\Lingfeng\\Desktop\\arrakisday\\up.ppm",
+	"C:\\Users\\Lingfeng\\Desktop\\arrakisday\\down.ppm",
+	"C:\\Users\\Lingfeng\\Desktop\\arrakisday\\back.ppm",
+	"C:\\Users\\Lingfeng\\Desktop\\arrakisday\\front.ppm"
 };
 
 Skybox::Skybox()

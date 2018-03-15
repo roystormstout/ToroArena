@@ -36,13 +36,13 @@
     <ClInclude Include="..\Geometry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\MatrixTransform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Node.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Curve.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Particle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BoundingBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -65,10 +65,13 @@
     <ClCompile Include="..\Geometry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\MatrixTransform.cpp">
+    <ClCompile Include="..\Curve.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Curve.cpp">
+    <ClCompile Include="..\Particle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BoundingBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -84,6 +87,18 @@
       <Filter>Source Files</Filter>
     </None>
     <None Include="..\skybox_shader.vert">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\Particle.fragmentshader">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\Particle.vertexshader">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\box_shader.frag">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\box_shader.vert">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

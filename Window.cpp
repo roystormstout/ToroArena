@@ -1,4 +1,4 @@
-#include "window.h"
+#include "Window.h"
 
 #define NONE 0
 #define ROTATE 1
@@ -8,7 +8,7 @@
 #define LEFT 1
 #define RIGHT 2
 
-const char* window_title = "GLFW Project 3";
+const char* window_title = "GLFW Project 4";
 Cube * cube;
 GLint shaderProgram;
 Skybox * sky;
@@ -21,17 +21,26 @@ int obj_num,mouse_con;
 
 #define SKY_VERTEX_SHADER_PATH "skybox_shader.vert"
 #define SKY_FRAGMENT_SHADER_PATH "skybox_shader.frag"
-GLint skybox_shaderProgram;
 
+
+#define BOX_VERT_SHADER_PATH "box_shader.vert"
+#define BOX_FRAG_SHADER_PATH "box_shader.frag"
+
+GLuint skybox_shaderProgram;
+GLuint particle_program;
+
+GLuint box_program;
 const double m_ROTSCALE = 90.0f;
 const double m_TRANSCALE = 2.0f;
 const double m_ZOOMSCALE = 0.5f;
 
+Particles* pe;
 
+bool debug;
 // Default camera parameters
-glm::vec3 cam_pos(0.0f, 0.0f, 50.0f);		// e  | Position of camera
-glm::vec3 cam_look_at(0.0f, 0.0f, 0.0f);	// d  | This is where the camera looks at
-glm::vec3 cam_up(0.0f, 1.0f, 0.0f);			// up | What orientation "up" is
+glm::vec3 Window::cam_pos(0.0f, 0.0f, 20.0f);		// e  | Position of camera
+glm::vec3 Window::cam_look_at(0.0f, 0.0f, 0.0f);	// d  | This is where the camera looks at
+glm::vec3 Window::cam_up(0.0f, 1.0f, 0.0f);			// up | What orientation "up" is
 
 int Window::width;
 int Window::height;
@@ -43,67 +52,28 @@ glm::vec2 Window::mousePoint;
 glm::vec3 Window::lastPoint;
 int movement(NONE);
 
-char body[100] = "C:\\Users\\Lingfeng\\Documents\\CSE167StarterCode2-master\\robot-parts\\body.obj";
-char antenna[100] = "C:\\Users\\Lingfeng\\Documents\\CSE167StarterCode2-master\\robot-parts\\antenna.obj";
-char eyeball[100] = "C:\\Users\\Lingfeng\\Documents\\CSE167StarterCode2-master\\robot-parts\\eyeball.obj";
-char head[100] = "C:\\Users\\Lingfeng\\Documents\\CSE167StarterCode2-master\\robot-parts\\head.obj";
-char limb[100] = "C:\\Users\\Lingfeng\\Documents\\CSE167StarterCode2-master\\robot-parts\\limb.obj";
-
-MatrixTransform * army;
+char ox[100] = "C:\\Users\\Lingfeng\\Desktop\\CSE167StarterCode2-master\\Bull_Low_Poly.obj";
+char curtain[100] = "C:\\Users\\Lingfeng\\Desktop\\CSE167StarterCode2-master\\curtain2.obj";
+char land[100] = "C:\\Users\\Lingfeng\\Desktop\\CSE167StarterCode2-master\\box3.obj";
 
 glm::vec3 p00, p01, p02, p03, p11, p12, p13, p21, p22, p23, p31, p32, p33, p41, p42, p43;
 
 Curve* curve1, *curve2, *curve3, *curve4, *curve5;
-
+Geometry* bull, *ground, *curtain_;
 int counter = 0;
 void Window::initialize_objects()
 {
 	sky = new Skybox();
 	shaderProgram = LoadShaders(VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH);
 	skybox_shaderProgram = LoadShaders(SKY_VERTEX_SHADER_PATH, SKY_FRAGMENT_SHADER_PATH);
+	box_program = LoadShaders(BOX_VERT_SHADER_PATH, BOX_FRAG_SHADER_PATH);
+    particle_program = LoadShaders("Particle.vertexshader", "Particle.fragmentshader");
 	glm::mat4 toWorld(1.0f);
-	army = new MatrixTransform(toWorld,NONE);
-	for (int i = 0;i <5;i++) {
-		for (int j = 0; j < 5;j++) {
-			glm::mat4 trans = glm::translate(glm::mat4(1.0f), glm::vec3(140-70.0f*i, 0.0f, 140-70.0f*j));
-			army->addChild(createBot(trans*toWorld));
-		}
-	}
-	p00 = { 0.0f,0.0f,-100.0f };
-	p01 = { 0.0f,100.0f,-100.0f };
-	p02 = { 100.0f,100.0f,-100.0f };
-	p03 = { 100.0f,0.0f,-100.0f };
-	glm::mat4x3 controlPts0 = { p00,p01,p02,p03 };
-	curve1 = new Curve(controlPts0);
+	bull = new Geometry(ox, { 1.0f,0.7f,0.5f }, glm::vec3(0.0f, -1.0f, 0.0f), 1);
+	ground = new Geometry(land, { 0.95f,0.8f,0.7f },glm::vec3(0.0f,-4.0f,0.0f),0);
+	curtain_ = new Geometry(curtain, { 0.9f,0.2f,0.2f },  glm::vec3(0.0f, 0.0f, 10.0f), 1);
 
-	//Bezier Curve 1
-	p11 = { 100.0f,-100.0f,-100.0f };
-	p12 = { 200.0f,-100.0f,0.0f };
-	p13 = { 200.0f,0.0f,0.0f };
-	glm::mat4x3 controlPts1 = { p03,p11,p12,p13 };
-	curve2 = new Curve(controlPts1);
-
-	//Bezier Curve 2
-	p21 = { 200.0f,100.0f,0.0f };
-	p22 = { 300.0f,100.0f,100.0f };
-	p23 = { 300.0f,0.0f,100.0f };
-	glm::mat4x3 controlPts2 = { p13,p21,p22,p23 };
-	curve3 = new Curve(controlPts2);
-
-	//Bezier Curve 3
-	p31 = { 200.0f,-100.0f,100.0f };
-	p32 = { 200.0f,-100.0f,200.0f };
-	p33 = { 200.0f,0.0f,100.0f };
-	glm::mat4x3 controlPts3 = { p23,p31,p32,p33 };
-	curve4 = new Curve(controlPts3);
-
-	//Bezier Curve 4
-	p41 = { 200.0f,100.0f,-100.0f };
-	p42 = { 100.0f,100.0f,0.0f };
-	glm::mat4x3 controlPts4 = { p33,p41,p42,p00 };
-	curve5 = new Curve(controlPts4);
-
-
+	pe = new Particles();
 }
 
 // Treat this as a destructor function. Delete dynamically allocated memory here.
@@ -181,48 +151,32 @@ void Window::resize_callback(GLFWwindow* window, int width, int height)
 
 void Window::idle_callback()
 {
-	// Call the update function the cube
-	glUseProgram(shaderProgram);
-	army->update();
-	std::cout << counter << std::endl;
-	if (counter < 150) {
-		army->translate(curve1->curve_verts[counter]);
-	}	
-	else if (counter < 300) {
-		army->translate(curve2->curve_verts[counter-150]);
+	int detector = bull->box->detectCollision(curtain_->box);
+	if (detector == 1) {
+		std::cout << "collided~~~~" << std::endl;
+		//curtain_->translate(glm::vec3(0, 10, 0));
 	}
-	else if (counter < 450) {
-		army->translate(curve3->curve_verts[counter - 300]);
-	}
-	else if (counter < 600) {
-		army->translate(curve4->curve_verts[counter - 450]);
-	}
-	else if (counter < 750) {
-		army->translate(curve5->curve_verts[counter - 600]);
-	}
-	else {
-		counter = 0;
-	}
-	counter++;
 }
 
 void Window::display_callback(GLFWwindow* window)
 {
 	V = glm::lookAt(cam_pos, cam_look_at, cam_up);
-	// Clear the color and depth buffers
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glUseProgram(shaderProgram);
-	army->draw(shaderProgram, glm::mat4(1.0f));
-	curve1->draw(shaderProgram);
-	curve2->draw(shaderProgram);
-	curve3->draw(shaderProgram);
-	curve4->draw(shaderProgram);
-	curve5->draw(shaderProgram);
-	//robotBody->draw(shaderProgram, glm::mat4(1.0f));
+	// Clear the color and depth buffers
+	glUseProgram(particle_program);
+	pe->draw(particle_program);
 	// Use the shader of programID
+	glUseProgram(shaderProgram);
+	bull->draw(shaderProgram);
+	ground->draw(shaderProgram);
+	curtain_->draw(shaderProgram);
+	glUseProgram(box_program);
+	bull->box->draw(box_program);
+	ground->box->draw(box_program);
+	curtain_->box->draw(box_program);
 	glUseProgram(skybox_shaderProgram);
 	sky->draw(skybox_shaderProgram);
+
 	// Gets events, including input such as keyboard and mouse or window resizing
 	glfwPollEvents();
 	// Swap buffers
@@ -249,19 +203,14 @@ void Window::key_callback(GLFWwindow* window, int key, int scancode, int action,
 				mouse_con = 1;
 			}
 		}
-		if (key == GLFW_KEY_S) {
-			army->scale(1.2f);
-		}
+
 		if (key == GLFW_KEY_W) {
-			army->scale(0.8f);
+			bull->translate(glm::vec3(0.0f, 0.0f, 1.0f));
+			pe->update(glm::vec3(0.0f, 0.0f, 1.0f));
 		}
-	}
-	if (action != GLFW_RELEASE) {
-		if (key == GLFW_KEY_A) {
-			army->spin(-2.0f);
-		}
-		if (key == GLFW_KEY_D) {
-			army->spin(2.0f);
+		if (key == GLFW_KEY_S) {
+			bull->translate(glm::vec3(0.0f, 0.0f, -1.0f));
+			pe->update(glm::vec3(0.0f, 0.0f, -1.0f));
 		}
 	}
 }
@@ -340,92 +289,13 @@ void Window::cursor_movement_callback(GLFWwindow* window, double x, double y)
 
 //resolved
 void Window::scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-	glm::vec3 z_dir = cam_look_at - cam_pos;
-	cam_pos -= ((float)-yoffset * glm::normalize(z_dir));
-	V = glm::lookAt(cam_pos, cam_look_at, cam_up);
-}
-
-MatrixTransform * Window::createBot(glm::mat4 matrix) {
-	MatrixTransform * robotMatrix;
-	glm::mat4 toWorld;
-	glm::vec3 rotAxis = glm::vec3(1.0f, 0.0f, 0.0f);
-	
-	//main control
-	robotMatrix = new MatrixTransform(matrix, NONE);
-
-	//body
-	Geometry* robotBody = new Geometry(body);
-	toWorld = glm::rotate(glm::mat4(1.0f), -90.0f / 180.0f * glm::pi<float>(), rotAxis)*glm::mat4(1.0f);
-	MatrixTransform * bodyTransform = new MatrixTransform(toWorld, NONE);
-	bodyTransform->addChild(robotBody);
-	robotMatrix->addChild(bodyTransform);
-
-	//head
-	Geometry* robotHead = new Geometry(head);
-	Geometry* leftrobotEye = new Geometry(eyeball);
-	Geometry* rightrobotEye = new Geometry(eyeball);
-	toWorld = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.0f, 0.0f))*toWorld;
-	MatrixTransform* headTransform = new MatrixTransform(toWorld, NONE);
-	//eyes
-	glm::mat4 eyeWorld1 = glm::translate(glm::mat4(1.0f), glm::vec3(7.0f, -5.0f, 90.0f));
-	MatrixTransform* eyeTransform = new MatrixTransform(eyeWorld1, NONE);
-	glm::mat4 eyeWorld2 = glm::translate(glm::mat4(1.0f), glm::vec3(-7.0f, -5.0f, 90.0f));
-	MatrixTransform* eyeTransform2 = new MatrixTransform(eyeWorld2, NONE);
-	headTransform->addChild(robotHead);
-	eyeTransform->addChild(leftrobotEye);
-	eyeTransform2->addChild(rightrobotEye);
-	headTransform->addChild(eyeTransform);
-	headTransform->addChild(eyeTransform2);
-	//antenna
-	Geometry* leftrobotAntenna = new Geometry(antenna);
-	glm::mat4 leftantennaMat = glm::translate(glm::mat4(1.0f), glm::vec3(10.0f, -5.0f, 90.0f));
-	MatrixTransform* antennaTrans = new MatrixTransform(leftantennaMat, NONE);
-	antennaTrans->addChild(leftrobotAntenna);
-	headTransform->addChild(antennaTrans);
-
-	robotMatrix->addChild(headTransform);
-
-	//left arm 
-	Geometry* leftArm = new Geometry(limb);
-	toWorld = glm::rotate(glm::mat4(1.0f), 120.0f / 180.0f * glm::pi<float>(), rotAxis)*glm::mat4(1.0f);
-	toWorld = glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 0.0f, 0.0f))*toWorld;
-	MatrixTransform* leftArmTransform = new MatrixTransform(toWorld, RIGHT);
-	leftArmTransform->addChild(leftArm);
-
-
-	//right arm 
-	Geometry* rightArm = new Geometry(limb);
-	toWorld = glm::rotate(glm::mat4(1.0f), 60.0f / 180.0f * glm::pi<float>(), rotAxis)*glm::mat4(1.0f);
-	toWorld = glm::translate(glm::mat4(1.0f), glm::vec3(50.0f, 0.0f, 0.0f))*toWorld;
-	MatrixTransform* rightArmTransform = new MatrixTransform(toWorld, LEFT);
-	rightArmTransform->addChild(rightArm);
-
-
-	MatrixTransform* armTransform = new MatrixTransform(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f,110.0f, 0.0f)), NONE);
-	armTransform->addChild(rightArmTransform);
-	armTransform->addChild(leftArmTransform);
-	robotMatrix->addChild(armTransform);
-
-	//left leg 
-	Geometry* leftLeg = new Geometry(limb);
-	toWorld = glm::mat4(1.0f);
-	toWorld = glm::rotate(glm::mat4(1.0f), 60.0f / 180.0f * glm::pi<float>(), rotAxis)*glm::mat4(1.0f);
-	toWorld = glm::translate(glm::mat4(1.0f), glm::vec3(15.0f, 0.0f, 0.0f))*toWorld;
-	MatrixTransform* leftLegTransform = new MatrixTransform(toWorld,LEFT);
-	leftLegTransform->addChild(leftLeg);
-
-
-	//right leg 
-	Geometry* rightLeg = new Geometry(limb);
-	toWorld = glm::mat4(1.0f);
-	toWorld = glm::rotate(glm::mat4(1.0f), 120.0f / 180.0f * glm::pi<float>(), rotAxis)*glm::mat4(1.0f);
-	toWorld = glm::translate(glm::mat4(1.0f), glm::vec3(40.0f, 0.0f, 0.0f))*toWorld;
-	MatrixTransform* rightLegTransform = new MatrixTransform(toWorld, RIGHT);
-	rightLegTransform->addChild(rightLeg);
-
-	MatrixTransform* legTransform = new MatrixTransform(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 80.0f, 0.0f)), NONE);
-	legTransform->addChild(rightLegTransform);
-	legTransform->addChild(leftLegTransform);
-	robotMatrix->addChild(legTransform);
-	return robotMatrix;
+	if (mouse_con == 0) {
+		glm::vec3 z_dir = cam_look_at - cam_pos;
+			cam_pos -= ((float)-yoffset * glm::normalize(z_dir));
+		V = glm::lookAt(cam_pos, cam_look_at, cam_up);
+	}
+	else {
+		glm::vec3 z_dir =  -bull->light_dir;
+		bull->light_dir -= ((float)(m_ZOOMSCALE * -yoffset) * glm::normalize(z_dir));
+	}
 }

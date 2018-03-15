@@ -20,7 +20,6 @@ class Cube
 public:
 	Cube();
 	~Cube();
-
 	glm::mat4 toWorld;
 
 	void draw(GLuint);

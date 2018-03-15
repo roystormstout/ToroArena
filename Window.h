@@ -17,6 +17,7 @@
 #include "MatrixTransform.h"
 #include "Geometry.h"
 #include "Curve.h"
+#include "Particle.h"
 
 class Window
 {
@@ -27,6 +28,9 @@ public:
 	static glm::mat4 V; // V for view
 	static glm::vec3 lastPoint;
 	static glm::vec2 mousePoint;
+	static glm::vec3 cam_pos;
+	static glm::vec3 cam_look_at;
+	static glm::vec3 cam_up;
 	static void initialize_objects();
 	static void clean_up();
 	static GLFWwindow* create_window(int width, int height);
@@ -38,7 +42,6 @@ public:
 	static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 	static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 	static glm::vec3 trackBallMapping(glm::vec2 point);
-	static MatrixTransform * createBot(glm::mat4 matrix);
 };
 
 #endif

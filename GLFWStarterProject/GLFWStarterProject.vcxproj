@@ -22,30 +22,41 @@
     <ClInclude Include="..\Cube.h" />
     <ClInclude Include="..\Curve.h" />
     <ClInclude Include="..\Geometry.h" />
+    <ClInclude Include="..\BoundingBox.h" />
     <ClInclude Include="..\main.h" />
-    <ClInclude Include="..\MatrixTransform.h" />
-    <ClInclude Include="..\Node.h" />
     <ClInclude Include="..\packages\stb-master\stb_image.h" />
     <ClInclude Include="..\shader.h" />
     <ClInclude Include="..\skybox.h" />
     <ClInclude Include="..\Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\BoundingBox.cpp" />
     <ClCompile Include="..\Cube.cpp" />
     <ClCompile Include="..\Curve.cpp" />
     <ClCompile Include="..\Geometry.cpp" />
     <ClCompile Include="..\main.cpp" />
-    <ClCompile Include="..\MatrixTransform.cpp" />
     <ClCompile Include="..\shader.cpp" />
     <ClCompile Include="..\skybox.cpp" />
     <ClCompile Include="..\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\box_shader.frag" />
+    <None Include="..\box_shader.vert" />
+    <None Include="..\Particle.fragmentshader" />
+    <None Include="..\Particle.vertexshader" />
     <None Include="..\skybox_shader.frag" />
     <None Include="..\skybox_shader.vert" />
     <None Include="..\shader.frag" />
     <None Include="..\shader.vert" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Particle.cpp">
+      <FileType>Text</FileType>
+    </ClCompile>
+    <ClInclude Include="..\Particle.h">
+      <FileType>Text</FileType>
+    </ClInclude>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{EBF1E546-3F93-49DB-BD9A-B629C3C6DCB0}</ProjectGuid>
