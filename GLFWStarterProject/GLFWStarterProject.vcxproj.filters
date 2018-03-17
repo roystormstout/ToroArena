@@ -45,6 +45,9 @@
     <ClInclude Include="..\BoundingBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\DoF.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\main.cpp">
@@ -74,6 +77,9 @@
     <ClCompile Include="..\BoundingBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\DoF.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shader.frag">
@@ -89,16 +95,22 @@
     <None Include="..\skybox_shader.vert">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="..\Particle.fragmentshader">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="..\Particle.vertexshader">
-      <Filter>Source Files</Filter>
-    </None>
     <None Include="..\box_shader.frag">
       <Filter>Source Files</Filter>
     </None>
     <None Include="..\box_shader.vert">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\Particle.frag">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\Particle.vert">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\DoF.frag">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\DoF.vert">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

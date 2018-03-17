@@ -31,6 +31,7 @@ public:
 	GLuint VAO, VBO, EBO, color, NBO;
 	GLuint uProjection, uModelview;
 	Geometry(const char *filepath, glm::vec3 color, glm::vec3 world, int toon);
+	Geometry(const char *filepath, glm::vec3 color, float angle, glm::vec3 move, int toon);
 	~Geometry();
 	void calculate_normals();
 	void draw(int program);
@@ -38,5 +39,6 @@ public:
 	void setup();
 	void update();
 	void translate(glm::vec3 move);
+	void rotate();
 };
 

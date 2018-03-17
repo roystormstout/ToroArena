@@ -3,17 +3,27 @@
 
 
 
-Geometry::Geometry(const char *filepath, glm::vec3 color, glm::vec3 world, int toon)
+Geometry::Geometry(const char *filepath, glm::vec3 color, glm::vec3 move, int toon)
 {
 	usingtoon = toon;
 	preset_color = color;
-	toWorld = glm::translate(glm::mat4(1.0f),world);
-	light_dir = { -20.0f, -20.0f,-20.0f };
+	toWorld = glm::translate(glm::mat4(1.0f), move);
+	light_dir = {-20.0f, -20.0f, 20.0f };
 	parse(filepath);
-	box = new BoundingBox(vertices,world);
+	box = new BoundingBox(vertices, move);
 	setup();
 }
 
+Geometry::Geometry(const char *filepath, glm::vec3 color, float angle, glm::vec3 move, int toon)
+{
+	usingtoon = toon;
+	preset_color = color;
+	toWorld = glm::translate(glm::mat4(1.0f), move)* glm::rotate(glm::mat4(1.0f), 180.0f / 180.0f * glm::pi<float>(), glm::vec3(0.0f, 1.0f, 0.0f));;
+	light_dir = { 10.0f, -20.0f, 50.0f };
+	parse(filepath);
+	box = new BoundingBox(vertices, move);
+	setup();
+}
 
 Geometry::~Geometry()
 {
@@ -125,4 +135,8 @@ void Geometry::draw(int program) {
 void Geometry::translate(glm::vec3 move) {
 	toWorld = glm::translate(glm::mat4(1.0f), move)*toWorld;
 	box->update(move);
+}
+
+void Geometry::rotate() {
+	toWorld = toWorld * glm::rotate(glm::mat4(1.0f), 1.0f / 180.0f * glm::pi<float>(), glm::vec3(0.0f, 1.0f, 0.0f));
 }

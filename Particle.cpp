@@ -52,10 +52,9 @@ int FindUnusedParticle() {
 	return 0; // All particles are taken, override the first one
 }
 
-Particles::Particles() {
+Particles::Particles(GLuint programID) {
 	translation = { 0,0,0 };
 	// Create and compile our GLSL program from the shaders
-	GLuint programID = LoadShaders("Particle.vertexshader", "Particle.fragmentshader");
 
 	// Vertex shader
 	GLuint CameraRight_worldspace_ID = glGetUniformLocation(programID, "CameraRight_worldspace");

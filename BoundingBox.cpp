@@ -154,21 +154,18 @@ void BoundingBox::update(glm::vec3 move) {
 
 int BoundingBox::detectCollision(BoundingBox* other) {
 	if ((minX+ offset.x) > (other->maxX+other->offset.x) || (maxX+offset.x) < (other->minX + other->offset.x)) {
-		color = { 0.0f,0.0f,0.0f };
-		other->color = { 0.0f,0.0f,0.0f };
+		other->color = { 0.0f,0.0f,0.0f};
 		return 0;
 	}
 	if ((minY+offset.y) > (other->maxY + other->offset.y) || (maxY+offset.y) < (other->minY + other->offset.y)) {
-		color = { 0.0f,0.0f,0.0f };
 		other->color = { 0.0f,0.0f,0.0f };
 		return 0;
 	}
 	if ((minZ+offset.z) > (other->maxZ + other->offset.z) || (maxZ+offset.z) < (other->minZ + other->offset.z)) {
-		color = { 0.0f,0.0f,0.0f };
 		other->color = { 0.0f,0.0f,0.0f };
 		return 0;
 	}
-	color = { 1.0f,0.3f,0.1f };
-	other->color = { 1.0f,0.3f,0.1f };
+	color = { 1.0f,0.0f,0.0f };
+	other->color = { 1.0f,0.0f,0.0f };
 	return 1;
 }

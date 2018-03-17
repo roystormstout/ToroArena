@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="..\Cube.h" />
     <ClInclude Include="..\Curve.h" />
+    <ClInclude Include="..\DoF.h" />
     <ClInclude Include="..\Geometry.h" />
     <ClInclude Include="..\BoundingBox.h" />
     <ClInclude Include="..\main.h" />
@@ -33,6 +34,7 @@
     <ClCompile Include="..\BoundingBox.cpp" />
     <ClCompile Include="..\Cube.cpp" />
     <ClCompile Include="..\Curve.cpp" />
+    <ClCompile Include="..\DoF.cpp" />
     <ClCompile Include="..\Geometry.cpp" />
     <ClCompile Include="..\main.cpp" />
     <ClCompile Include="..\shader.cpp" />
@@ -42,8 +44,10 @@
   <ItemGroup>
     <None Include="..\box_shader.frag" />
     <None Include="..\box_shader.vert" />
-    <None Include="..\Particle.fragmentshader" />
-    <None Include="..\Particle.vertexshader" />
+    <None Include="..\DoF.frag" />
+    <None Include="..\DoF.vert" />
+    <None Include="..\Particle.frag" />
+    <None Include="..\Particle.vert" />
     <None Include="..\skybox_shader.frag" />
     <None Include="..\skybox_shader.vert" />
     <None Include="..\shader.frag" />

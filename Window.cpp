@@ -28,6 +28,7 @@ int obj_num,mouse_con;
 
 GLuint skybox_shaderProgram;
 GLuint particle_program;
+GLuint depth_program;
 
 GLuint box_program;
 const double m_ROTSCALE = 90.0f;
@@ -53,13 +54,14 @@ glm::vec3 Window::lastPoint;
 int movement(NONE);
 
 char ox[100] = "C:\\Users\\Lingfeng\\Desktop\\CSE167StarterCode2-master\\Bull_Low_Poly.obj";
-char curtain[100] = "C:\\Users\\Lingfeng\\Desktop\\CSE167StarterCode2-master\\curtain2.obj";
+char curtain[100] = "C:\\Users\\Lingfeng\\Desktop\\CSE167StarterCode2-master\\curtain3.obj";
 char land[100] = "C:\\Users\\Lingfeng\\Desktop\\CSE167StarterCode2-master\\box3.obj";
 
 glm::vec3 p00, p01, p02, p03, p11, p12, p13, p21, p22, p23, p31, p32, p33, p41, p42, p43;
 
 Curve* curve1, *curve2, *curve3, *curve4, *curve5;
 Geometry* bull, *ground, *curtain_;
+DoF* depth;
 int counter = 0;
 void Window::initialize_objects()
 {
@@ -67,13 +69,15 @@ void Window::initialize_objects()
 	shaderProgram = LoadShaders(VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH);
 	skybox_shaderProgram = LoadShaders(SKY_VERTEX_SHADER_PATH, SKY_FRAGMENT_SHADER_PATH);
 	box_program = LoadShaders(BOX_VERT_SHADER_PATH, BOX_FRAG_SHADER_PATH);
-    particle_program = LoadShaders("Particle.vertexshader", "Particle.fragmentshader");
+    particle_program = LoadShaders("Particle.vert", "Particle.frag");
+	depth_program = LoadShaders("DoF.vert", "DoF.frag");
 	glm::mat4 toWorld(1.0f);
 	bull = new Geometry(ox, { 1.0f,0.7f,0.5f }, glm::vec3(0.0f, -1.0f, 0.0f), 1);
 	ground = new Geometry(land, { 0.95f,0.8f,0.7f },glm::vec3(0.0f,-4.0f,0.0f),0);
-	curtain_ = new Geometry(curtain, { 0.9f,0.2f,0.2f },  glm::vec3(0.0f, 0.0f, 10.0f), 1);
-
-	pe = new Particles();
+	curtain_ = new Geometry(curtain, { 1.0f,0.2f,0.2f }, glm::vec3(0.0f, 0.0f, 10.0f), 1);
+	debug = false;
+	pe = new Particles(particle_program);
+	depth = new DoF(depth_program);
 }
 
 // Treat this as a destructor function. Delete dynamically allocated memory here.
@@ -151,16 +155,25 @@ void Window::resize_callback(GLFWwindow* window, int width, int height)
 
 void Window::idle_callback()
 {
+	//curtain_->rotate();
 	int detector = bull->box->detectCollision(curtain_->box);
-	if (detector == 1) {
+	int detector2 = bull->box->detectCollision(ground->box);
+	if (detector == 1 || detector2 == 1) {
 		std::cout << "collided~~~~" << std::endl;
 		//curtain_->translate(glm::vec3(0, 10, 0));
+	}
+	else {
+		bull->box->color = { 0,0,0 };
 	}
 }
 
 void Window::display_callback(GLFWwindow* window)
 {
 	V = glm::lookAt(cam_pos, cam_look_at, cam_up);
+	glClearColor(0.5, 0.7, 0.8,1.0);
+
+	depth->bindFrameBuffer();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Clear the color and depth buffers
 	glUseProgram(particle_program);
@@ -170,12 +183,16 @@ void Window::display_callback(GLFWwindow* window)
 	bull->draw(shaderProgram);
 	ground->draw(shaderProgram);
 	curtain_->draw(shaderProgram);
-	glUseProgram(box_program);
-	bull->box->draw(box_program);
-	ground->box->draw(box_program);
-	curtain_->box->draw(box_program);
+	if (debug) {
+		glUseProgram(box_program);
+		bull->box->draw(box_program);
+		ground->box->draw(box_program);
+		curtain_->box->draw(box_program);
+	}
 	glUseProgram(skybox_shaderProgram);
 	sky->draw(skybox_shaderProgram);
+
+	depth->dof_post_processing(depth_program);
 
 	// Gets events, including input such as keyboard and mouse or window resizing
 	glfwPollEvents();
@@ -194,16 +211,6 @@ void Window::key_callback(GLFWwindow* window, int key, int scancode, int action,
 			// Close the window. This causes the program to also terminate.
 			glfwSetWindowShouldClose(window, GL_TRUE);
 		}
-	
-		if (key == GLFW_KEY_0) {
-			if (mouse_con == 1) {
-				mouse_con = 0;
-			}
-			else {
-				mouse_con = 1;
-			}
-		}
-
 		if (key == GLFW_KEY_W) {
 			bull->translate(glm::vec3(0.0f, 0.0f, 1.0f));
 			pe->update(glm::vec3(0.0f, 0.0f, 1.0f));
@@ -211,6 +218,15 @@ void Window::key_callback(GLFWwindow* window, int key, int scancode, int action,
 		if (key == GLFW_KEY_S) {
 			bull->translate(glm::vec3(0.0f, 0.0f, -1.0f));
 			pe->update(glm::vec3(0.0f, 0.0f, -1.0f));
+		}
+		if (key == GLFW_KEY_0) {
+			debug = !debug;
+		}
+		if (key == GLFW_KEY_U) {
+			depth->decrease_focus();
+		}
+		if (key == GLFW_KEY_I) {
+			depth->increase_focus();
 		}
 	}
 }

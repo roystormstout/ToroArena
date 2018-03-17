@@ -18,6 +18,7 @@
 #include "Geometry.h"
 #include "Curve.h"
 #include "Particle.h"
+#include "DoF.h"
 
 class Window
 {

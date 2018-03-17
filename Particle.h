@@ -26,7 +26,7 @@ class Particles {
 
 public:
 	glm::vec3 translation;
-	Particles();
+	Particles(GLuint);
 	~Particles();
 	void update(glm::vec3 move);
 	/// better be called before swapping buffer
