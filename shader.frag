@@ -19,7 +19,7 @@ void main()
 {
 	float intensity;
 	vec4 colorResult;
-	intensity = dot(normalize(vec3(-light_dir)-world_pos),fragNormal);
+	intensity = dot(normalize(vec3(-light_dir)),fragNormal);
 	if(toon == 0){
 		colorResult = vec4(presetColor,1.0);
 	}

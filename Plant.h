@@ -6,22 +6,29 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 #include <string>
-#include "Node.h"
 #include "Window.h"
 
-class Curve
+class Plant
 {
 public:
-	glm::mat4x3 control_points;
+	float angle;
+	float lineWidth;
 	std::vector<glm::vec3> curve_verts;
 	std::vector<glm::vec3> colors;
 	std::vector<unsigned int> indices;
 	GLuint VAO, VBO, EBO, Color;
 	GLuint uProjection, uModelview;
-	Curve(glm::mat4x3 pts);
-	~Curve();
+	glm::vec3 startPoint;
+	glm::vec3 currentColor;
+	glm::vec3 startAngle;
+	std::string ruleX;
+	std::string ruleF;
+	std::string startStr;
+	Plant();
+	Plant(glm::vec3 sp, std::string X, std::string F, float);
+	Plant(glm::vec3 sp, std::string X, std::string F, float ang, std::string axiom);
+	~Plant();
 	void calculate_verts();
-	float Bpolynormial(int i,float time);
 	void draw(GLuint shaderProgram);
 };
 

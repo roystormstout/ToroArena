@@ -48,6 +48,12 @@
     <ClInclude Include="..\DoF.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\Plant.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\main.cpp">
@@ -78,6 +84,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\DoF.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Plant.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -113,5 +122,16 @@
     <None Include="..\DoF.vert">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="..\plantshader.frag">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\plantshader.vert">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="GLFWStarterProject.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

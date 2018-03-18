@@ -1,5 +1,6 @@
 #include "Window.h"
 
+
 #define NONE 0
 #define ROTATE 1
 #define ZOOM 2
@@ -29,7 +30,7 @@ int obj_num,mouse_con;
 GLuint skybox_shaderProgram;
 GLuint particle_program;
 GLuint depth_program;
-
+GLuint plant_program;
 GLuint box_program;
 const double m_ROTSCALE = 90.0f;
 const double m_TRANSCALE = 2.0f;
@@ -39,7 +40,7 @@ Particles* pe;
 
 bool debug;
 // Default camera parameters
-glm::vec3 Window::cam_pos(0.0f, 0.0f, 20.0f);		// e  | Position of camera
+glm::vec3 Window::cam_pos(8.0f, 25.0f, -40.0f);		// e  | Position of camera
 glm::vec3 Window::cam_look_at(0.0f, 0.0f, 0.0f);	// d  | This is where the camera looks at
 glm::vec3 Window::cam_up(0.0f, 1.0f, 0.0f);			// up | What orientation "up" is
 
@@ -56,11 +57,12 @@ int movement(NONE);
 char ox[100] = "C:\\Users\\Lingfeng\\Desktop\\CSE167StarterCode2-master\\Bull_Low_Poly.obj";
 char curtain[100] = "C:\\Users\\Lingfeng\\Desktop\\CSE167StarterCode2-master\\curtain3.obj";
 char land[100] = "C:\\Users\\Lingfeng\\Desktop\\CSE167StarterCode2-master\\box3.obj";
-
+char stone[100] = "C:\\Users\\Lingfeng\\Desktop\\CSE167StarterCode2-master\\stone.obj";
 glm::vec3 p00, p01, p02, p03, p11, p12, p13, p21, p22, p23, p31, p32, p33, p41, p42, p43;
 
-Curve* curve1, *curve2, *curve3, *curve4, *curve5;
-Geometry* bull, *ground, *curtain_;
+Plant * plant1 , * plant2, * plant3, *plant4, *plant5;
+std::vector<Plant *> field;
+Geometry* bull, *ground, *curtain_, * stone1, *stone2, *stone3, *stone4;
 DoF* depth;
 int counter = 0;
 void Window::initialize_objects()
@@ -70,14 +72,34 @@ void Window::initialize_objects()
 	skybox_shaderProgram = LoadShaders(SKY_VERTEX_SHADER_PATH, SKY_FRAGMENT_SHADER_PATH);
 	box_program = LoadShaders(BOX_VERT_SHADER_PATH, BOX_FRAG_SHADER_PATH);
     particle_program = LoadShaders("Particle.vert", "Particle.frag");
+	plant_program = LoadShaders("plantshader.vert", "plantshader.frag");
 	depth_program = LoadShaders("DoF.vert", "DoF.frag");
 	glm::mat4 toWorld(1.0f);
-	bull = new Geometry(ox, { 1.0f,0.7f,0.5f }, glm::vec3(0.0f, -1.0f, 0.0f), 1);
-	ground = new Geometry(land, { 0.95f,0.8f,0.7f },glm::vec3(0.0f,-4.0f,0.0f),0);
-	curtain_ = new Geometry(curtain, { 1.0f,0.2f,0.2f }, glm::vec3(0.0f, 0.0f, 10.0f), 1);
+	bull = new Geometry(ox, { 1.0f,0.7f,0.5f }, glm::vec3(0.0f, 0.0f, 0.0f), 1);
+	ground = new Geometry(land, { 0.95f,0.8f,0.7f },glm::vec3(0.0f,-2.0f,0.0f),0);
+	curtain_ = new Geometry(curtain, { 1.0f,0.2f,0.2f }, glm::vec3(0.0f, 0.0f, 250.0f), 1);
+	stone1 = new Geometry(stone, { 0.3f,0.3f,0.4f }, glm::vec3(30.0f, 0.0f, 210.0f), 1);
+	stone2 = new Geometry(stone, { 0.3f,0.3f,0.4f }, glm::vec3(30.0f, 0.0f, 80.0f), 1);
+
+	stone3 = new Geometry(stone, { 0.3f,0.3f,0.4f }, glm::vec3(-20.0f, 0.0f, 100.0f), 1);
+	stone4 = new Geometry(stone, { 0.3f,0.3f,0.4f }, glm::vec3( 5.0f, 0.0f, 160.0f), 1);
 	debug = false;
 	pe = new Particles(particle_program);
-	depth = new DoF(depth_program);
+	//depth = new DoF(depth_program);
+	plant1 = new Plant();
+	/*plant2 = new Plant({ 11.0f,-1.0f, 3.0f }, "F", "FF-[-FF+F]+[+F-F]", 50.0f);
+	plant3 = new Plant({ 18.0f,-1.0f, -10.0f }, "F", "FF-[-FF+F]+[+F-F]", 50.0f);
+	plant4 = new Plant({ 5.0f,-1.0f, -5.0f }, "F", "FF-[-FF+F]+[+F-F]", 50.0f);*/
+	for (int i = 0; i < 15;i++) {
+		for (int j = 0; j < 15;j++) {
+			field.push_back(new Plant({ -32+i,-1.0f, 10+j }, "F[-X][X]F[-X]+FX", "FF", 25.0f, "X"));
+		}
+	}
+	for (int i = 0; i < 3;i++) {
+		for (int j = 0; j < 3;j++) {
+			field.push_back(new Plant({ 25 + 5*i,-1.0f, 30 + 5*j }, "F", "FF-[-FF+F]+[+F-F]", 50.0f));
+		}
+	}
 }
 
 // Treat this as a destructor function. Delete dynamically allocated memory here.
@@ -157,10 +179,20 @@ void Window::idle_callback()
 {
 	//curtain_->rotate();
 	int detector = bull->box->detectCollision(curtain_->box);
-	int detector2 = bull->box->detectCollision(ground->box);
-	if (detector == 1 || detector2 == 1) {
+	int detector2 = bull->box->detectCollision(stone1->box);
+	int detector3 = bull->box->detectCollision(stone2->box);
+	int detector4 = bull->box->detectCollision(stone3->box);
+	int detector5 = bull->box->detectCollision(stone4->box);
+	if (detector2 + detector3+ detector4+ detector5 != 0) {
+		cam_pos = { 8.0f, 25.0f, -40.0f };		// e  | Position of camera
+		cam_look_at = { 0.0f, 0.0f, 0.0f };	// d  | This is where the camera looks at
+		bull->translate(-bull->offset);
+		pe->translation = { 0,0,0 };
 		std::cout << "collided~~~~" << std::endl;
 		//curtain_->translate(glm::vec3(0, 10, 0));
+	}
+	else if (detector == 1) {
+		bull->preset_color = { 1.0f,0.8f,0 };
 	}
 	else {
 		bull->box->color = { 0,0,0 };
@@ -170,11 +202,10 @@ void Window::idle_callback()
 void Window::display_callback(GLFWwindow* window)
 {
 	V = glm::lookAt(cam_pos, cam_look_at, cam_up);
-	glClearColor(0.5, 0.7, 0.8,1.0);
+	glClearColor(0,0,0, 1.0);
 
-	depth->bindFrameBuffer();
+	//depth->bindFrameBuffer();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	// Clear the color and depth buffers
 	glUseProgram(particle_program);
 	pe->draw(particle_program);
@@ -183,16 +214,30 @@ void Window::display_callback(GLFWwindow* window)
 	bull->draw(shaderProgram);
 	ground->draw(shaderProgram);
 	curtain_->draw(shaderProgram);
+	stone1->draw(shaderProgram);
+	stone2->draw(shaderProgram);
+	stone3->draw(shaderProgram);
+	stone4->draw(shaderProgram);
 	if (debug) {
 		glUseProgram(box_program);
+		glLineWidth(1.0f);
+		stone1->box->draw(box_program);
+		stone2->box->draw(box_program);
+		stone3->box->draw(box_program);
+		stone4->box->draw(box_program);
 		bull->box->draw(box_program);
 		ground->box->draw(box_program);
 		curtain_->box->draw(box_program);
 	}
+	glUseProgram(plant_program);
+	plant1->draw(plant_program);
+	for (auto p : field) {
+		p->draw(plant_program);
+	}
 	glUseProgram(skybox_shaderProgram);
 	sky->draw(skybox_shaderProgram);
 
-	depth->dof_post_processing(depth_program);
+	//depth->dof_post_processing(depth_program);
 
 	// Gets events, including input such as keyboard and mouse or window resizing
 	glfwPollEvents();
@@ -211,14 +256,6 @@ void Window::key_callback(GLFWwindow* window, int key, int scancode, int action,
 			// Close the window. This causes the program to also terminate.
 			glfwSetWindowShouldClose(window, GL_TRUE);
 		}
-		if (key == GLFW_KEY_W) {
-			bull->translate(glm::vec3(0.0f, 0.0f, 1.0f));
-			pe->update(glm::vec3(0.0f, 0.0f, 1.0f));
-		}
-		if (key == GLFW_KEY_S) {
-			bull->translate(glm::vec3(0.0f, 0.0f, -1.0f));
-			pe->update(glm::vec3(0.0f, 0.0f, -1.0f));
-		}
 		if (key == GLFW_KEY_0) {
 			debug = !debug;
 		}
@@ -227,6 +264,32 @@ void Window::key_callback(GLFWwindow* window, int key, int scancode, int action,
 		}
 		if (key == GLFW_KEY_I) {
 			depth->increase_focus();
+		}
+	}
+	if (action != GLFW_RELEASE) {
+		if (key == GLFW_KEY_A) {
+			cam_look_at += glm::vec3(1.0f, 0.0f, 0.0f);
+			cam_pos += glm::vec3(1.0f, 0.0f, 0.0f);
+			bull->translate(glm::vec3(1.0f, 0.0f, 0.0f));
+			pe->update(glm::vec3(1.0f, 0.0f, 0.0f));
+		}
+		if (key == GLFW_KEY_D) {
+			cam_look_at += glm::vec3(-1.0f, 0.0f, 0.0f);
+			cam_pos += glm::vec3(-1.0f, 0.0f, 0.0f);
+			bull->translate(glm::vec3(-1.0f, 0.0f, 0.0f));
+			pe->update(glm::vec3(-1.0f, 0.0f, 0.0f));
+		}
+		if (key == GLFW_KEY_W) {
+			cam_look_at += glm::vec3(0.0f, 0.0f, 1.0f);
+			cam_pos += glm::vec3(0.0f, 0.0f, 1.0f);
+			bull->translate(glm::vec3(0.0f, 0.0f, 1.0f));
+			pe->update(glm::vec3(0.0f, 0.0f, 1.0f));
+		}
+		if (key == GLFW_KEY_S) {
+			cam_look_at += glm::vec3(0.0f, 0.0f, -1.0f);
+			cam_pos += glm::vec3(0.0f, 0.0f, -1.0f);
+			bull->translate(glm::vec3(0.0f, 0.0f, -1.0f));
+			pe->update(glm::vec3(0.0f, 0.0f, -1.0f));
 		}
 	}
 }
@@ -278,34 +341,34 @@ void Window::cursor_movement_callback(GLFWwindow* window, double x, double y)
 	// 
 	// Handle any necessary mouse movements
 	//
-	glm::vec3 direction;
-	float rot_angle;
-	glm::vec3 curPoint;
+	//glm::vec3 direction;
+	//float rot_angle;
+	//glm::vec3 curPoint;
 
-	mousePoint = { x, y };
-	if (movement == ROTATE) {
-		glm::vec2 point = glm::vec2(x, y);
-		curPoint = trackBallMapping(point); // Map the mouse position to a logical
-											// sphere location.
-		direction = curPoint - lastPoint;
-		float velocity = glm::length(direction);
-		if (velocity > 0.01) // If little movement - do nothing.
-		{
-			//get axis to rotate around
-			glm::vec3 rotAxis;
-			rotAxis = glm::cross(lastPoint, curPoint);
-			rot_angle = velocity * m_ROTSCALE;
-			float off = 0.3f;
-			cam_pos = glm::vec3(glm::rotate(glm::mat4(1.0f), rot_angle / 180.0f * glm::pi<float>(), rotAxis) * glm::vec4(cam_pos,1.0f));
-			V = glm::lookAt(cam_pos, cam_look_at, cam_up);
-		}
-	}
-	lastPoint = curPoint;
+	//mousePoint = { x, y };
+	//if (movement == ROTATE) {
+	//	glm::vec2 point = glm::vec2(x, y);
+	//	curPoint = trackBallMapping(point); // Map the mouse position to a logical
+	//										// sphere location.
+	//	direction = curPoint - lastPoint;
+	//	float velocity = glm::length(direction);
+	//	if (velocity > 0.01) // If little movement - do nothing.
+	//	{
+	//		//get axis to rotate around
+	//		glm::vec3 rotAxis;
+	//		rotAxis = glm::cross(lastPoint, curPoint);
+	//		rot_angle = velocity * m_ROTSCALE;
+	//		float off = 0.3f;
+	//		cam_pos = glm::vec3(glm::rotate(glm::mat4(1.0f), rot_angle / 180.0f * glm::pi<float>(), rotAxis) * glm::vec4(cam_pos,1.0f));
+	//		V = glm::lookAt(cam_pos, cam_look_at, cam_up);
+	//	}
+	//}
+	//lastPoint = curPoint;
 }
 
 //resolved
 void Window::scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-	if (mouse_con == 0) {
+	/*if (mouse_con == 0) {
 		glm::vec3 z_dir = cam_look_at - cam_pos;
 			cam_pos -= ((float)-yoffset * glm::normalize(z_dir));
 		V = glm::lookAt(cam_pos, cam_look_at, cam_up);
@@ -313,5 +376,5 @@ void Window::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 	else {
 		glm::vec3 z_dir =  -bull->light_dir;
 		bull->light_dir -= ((float)(m_ZOOMSCALE * -yoffset) * glm::normalize(z_dir));
-	}
+	}*/
 }

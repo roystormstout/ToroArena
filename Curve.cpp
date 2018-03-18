@@ -1,7 +1,6 @@
 #include "Curve.h"
-
-
-
+#include <stdio.h>      /* printf */
+#include <math.h>       /* cos */
 Curve::Curve(glm::mat4x3 pts) : control_points(pts)
 {
 	calculate_verts();

@@ -2,7 +2,7 @@
 #include "Particle.h"
 #include "Window.h"
 #include "texture.cpp"
-#define MaxParticles 1000
+#define MaxParticles 10000
 
 struct Particle {
 	glm::vec3 pos, speed;
@@ -135,12 +135,12 @@ void Particles::draw(GLuint programID) {
 
 
 		// Very bad way to generate a random color
-		ParticlesContainer[particleIndex].r = 235;
-		ParticlesContainer[particleIndex].g = 200;
-		ParticlesContainer[particleIndex].b = 178;
+		ParticlesContainer[particleIndex].r = 225;
+		ParticlesContainer[particleIndex].g = 190;
+		ParticlesContainer[particleIndex].b = 163;
 		ParticlesContainer[particleIndex].a = (rand() % 256)/2 + 100;
 
-		ParticlesContainer[particleIndex].size = (rand() % 1000) / 5000.0f + 0.05f;
+		ParticlesContainer[particleIndex].size = (rand() % 1000) / 4000.0f + 0.05f;
 
 	}
 

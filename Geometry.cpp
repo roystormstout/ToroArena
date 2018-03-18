@@ -8,7 +8,8 @@ Geometry::Geometry(const char *filepath, glm::vec3 color, glm::vec3 move, int to
 	usingtoon = toon;
 	preset_color = color;
 	toWorld = glm::translate(glm::mat4(1.0f), move);
-	light_dir = {-20.0f, -20.0f, 20.0f };
+	offset = { 0,0,0 };
+	light_dir = {-20.0f, -20.0f, 40.0f };
 	parse(filepath);
 	box = new BoundingBox(vertices, move);
 	setup();
@@ -133,6 +134,7 @@ void Geometry::draw(int program) {
 }
 
 void Geometry::translate(glm::vec3 move) {
+	offset += move;
 	toWorld = glm::translate(glm::mat4(1.0f), move)*toWorld;
 	box->update(move);
 }

@@ -10,6 +10,7 @@
 #include <GL/glew.h>
 #endif
 #include <GLFW/glfw3.h>
+#include <GL/glut.h>
 #include "Cube.h"
 #include "shader.h"
 #include "skybox.h"
@@ -19,6 +20,7 @@
 #include "Curve.h"
 #include "Particle.h"
 #include "DoF.h"
+#include "Plant.h"
 
 class Window
 {
