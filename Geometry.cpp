@@ -9,7 +9,7 @@ Geometry::Geometry(const char *filepath, glm::vec3 color, glm::vec3 move, int to
 	preset_color = color;
 	toWorld = glm::translate(glm::mat4(1.0f), move);
 	offset = { 0,0,0 };
-	light_dir = {-20.0f, -20.0f, 40.0f };
+	light_dir = {-20.0f, -40.0f, 30.0f };
 	parse(filepath);
 	box = new BoundingBox(vertices, move);
 	setup();
@@ -116,7 +116,7 @@ void Geometry::update()
 {
 }
 
-void Geometry::draw(int program) {
+void Geometry::draw(int program, bool tooning) {
 	glUseProgram(program);
 	uProjection = glGetUniformLocation(program, "projection");
 	uModelview = glGetUniformLocation(program, "modelview");
@@ -127,7 +127,10 @@ void Geometry::draw(int program) {
 	glUniformMatrix4fv(glGetUniformLocation(program, "model"), 1, GL_FALSE, &toWorld[0][0]);
 	glUniformMatrix4fv(uProjection, 1, GL_FALSE, &Window::P[0][0]);
 	glUniformMatrix4fv(uModelview, 1, GL_FALSE, &modelview[0][0]);
-	glUniform1i(glGetUniformLocation(program, "toon"), usingtoon);
+	if(tooning)
+		glUniform1i(glGetUniformLocation(program, "toon"), usingtoon);
+	else
+		glUniform1i(glGetUniformLocation(program, "toon"), 0);
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);

@@ -25,7 +25,7 @@ public:
 	std::string ruleF;
 	std::string startStr;
 	Plant();
-	Plant(glm::vec3 sp, std::string X, std::string F, float);
+	Plant(glm::vec3 sp, std::string X, std::string F, float, glm::vec3);
 	Plant(glm::vec3 sp, std::string X, std::string F, float ang, std::string axiom);
 	~Plant();
 	void calculate_verts();

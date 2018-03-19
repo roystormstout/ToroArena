@@ -144,12 +144,6 @@ void BoundingBox::draw(GLuint shaderProgram) {
 void BoundingBox::update(glm::vec3 move) {
 	offset += move;
 	toWorld = glm::translate(glm::mat4(1.0f), offset);
-
-	std::cout << "minX " << minX << " maxX " << maxX << std::endl;
-
-	std::cout << "minY " << minY << " maxY " << maxY << std::endl;
-
-	std::cout << "minZ " << minZ << " maxZ " << maxZ << std::endl;
 }
 
 int BoundingBox::detectCollision(BoundingBox* other) {

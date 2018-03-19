@@ -39,7 +39,7 @@ Plant::Plant()
 	glBindVertexArray(0);
 }
 
-Plant::Plant(glm::vec3 sp, std::string X, std::string F, float ang)
+Plant::Plant(glm::vec3 sp, std::string X, std::string F, float ang, glm::vec3 color)
 {
 	lineWidth = 2.0f;
 	startStr = "X";
@@ -48,7 +48,7 @@ Plant::Plant(glm::vec3 sp, std::string X, std::string F, float ang)
 	ruleX = X;
 	ruleF = F;
 	angle = ang;
-	currentColor = { 0.05f,0.1f,0 };
+	currentColor =  color;
 	calculate_verts();
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);

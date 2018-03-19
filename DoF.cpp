@@ -126,6 +126,29 @@ void DOF_Postprocessing(GLuint program, float aperture, float focus, float maxBl
 void DoF::bindFrameBuffer() {
 	// use the customized framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+
+	glBindTexture(GL_TEXTURE_2D, depthmap);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexImage2D(
+		GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, Window::width, Window::height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL
+	);
+	glFramebufferTexture2D(
+		GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthmap, 0
+	);
+
+	// COLOR
+	glBindTexture(GL_TEXTURE_2D, colormap);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexImage2D(
+		GL_TEXTURE_2D, 0, GL_RGBA, Window::width, Window::height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL
+	);
+	glFramebufferTexture2D(
+		GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colormap, 0
+	);
 }
 
 void DoF::dof_post_processing(GLuint program) {

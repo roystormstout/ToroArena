@@ -38,10 +38,12 @@ const double m_ZOOMSCALE = 0.5f;
 
 Particles* pe;
 
-bool debug;
+bool debug, tooning, dof;
 // Default camera parameters
-glm::vec3 Window::cam_pos(8.0f, 25.0f, -40.0f);		// e  | Position of camera
-glm::vec3 Window::cam_look_at(0.0f, 0.0f, 0.0f);	// d  | This is where the camera looks at
+//glm::vec3 Window::cam_pos(55.0f, 10.0f, 107.0f);		// e  | Position of camera
+//glm::vec3 Window::cam_look_at(0, 0.0f, 0.0f);	// d  | This is where the camera looks at
+glm::vec3 Window::cam_pos = { 8.0f, 40.0f, -40.0f };		// e  | Position of camera
+glm::vec3 Window::cam_look_at = { 0.0f, 0.0f, 0.0f };	// d  | This is where the camera looks at
 glm::vec3 Window::cam_up(0.0f, 1.0f, 0.0f);			// up | What orientation "up" is
 
 int Window::width;
@@ -62,7 +64,7 @@ glm::vec3 p00, p01, p02, p03, p11, p12, p13, p21, p22, p23, p31, p32, p33, p41, 
 
 Plant * plant1 , * plant2, * plant3, *plant4, *plant5;
 std::vector<Plant *> field;
-Geometry* bull, *ground, *curtain_, * stone1, *stone2, *stone3, *stone4;
+Geometry* bull, *ground, *curtain_, * stone1, *stone2, *stone3, *stone4, *stone5;
 DoF* depth;
 int counter = 0;
 void Window::initialize_objects()
@@ -76,28 +78,34 @@ void Window::initialize_objects()
 	depth_program = LoadShaders("DoF.vert", "DoF.frag");
 	glm::mat4 toWorld(1.0f);
 	bull = new Geometry(ox, { 1.0f,0.7f,0.5f }, glm::vec3(0.0f, 0.0f, 0.0f), 1);
-	ground = new Geometry(land, { 0.95f,0.8f,0.7f },glm::vec3(0.0f,-2.0f,0.0f),0);
-	curtain_ = new Geometry(curtain, { 1.0f,0.2f,0.2f }, glm::vec3(0.0f, 0.0f, 250.0f), 1);
-	stone1 = new Geometry(stone, { 0.3f,0.3f,0.4f }, glm::vec3(30.0f, 0.0f, 210.0f), 1);
-	stone2 = new Geometry(stone, { 0.3f,0.3f,0.4f }, glm::vec3(30.0f, 0.0f, 80.0f), 1);
-
-	stone3 = new Geometry(stone, { 0.3f,0.3f,0.4f }, glm::vec3(-20.0f, 0.0f, 100.0f), 1);
+	ground = new Geometry(land, { 0.95f,0.8f,0.7f },glm::vec3(0.0f,-3.0f,0.0f),0);
+	curtain_ = new Geometry(curtain, { 1.0f,0.2f,0.2f }, glm::vec3(0.0f, 0.0f, 270.0f), 1);
+	stone1 = new Geometry(stone, { 0.3f,0.3f,0.4f }, glm::vec3(20.0f, 0.0f, 220.0f), 1);
+	stone5 = new Geometry(stone, { 0.3f,0.3f,0.4f }, glm::vec3(-18.0f, 0.0f, 225.0f), 1);
+	stone2 = new Geometry(stone, { 0.3f,0.3f,0.4f }, glm::vec3(30.0f, 0.0f, 100.0f), 1);
+	stone3 = new Geometry(stone, { 0.3f,0.3f,0.4f }, glm::vec3(-20.0f, 0.0f, 110.0f), 1);
 	stone4 = new Geometry(stone, { 0.3f,0.3f,0.4f }, glm::vec3( 5.0f, 0.0f, 160.0f), 1);
 	debug = false;
 	pe = new Particles(particle_program);
-	//depth = new DoF(depth_program);
-	plant1 = new Plant();
-	/*plant2 = new Plant({ 11.0f,-1.0f, 3.0f }, "F", "FF-[-FF+F]+[+F-F]", 50.0f);
-	plant3 = new Plant({ 18.0f,-1.0f, -10.0f }, "F", "FF-[-FF+F]+[+F-F]", 50.0f);
-	plant4 = new Plant({ 5.0f,-1.0f, -5.0f }, "F", "FF-[-FF+F]+[+F-F]", 50.0f);*/
-	for (int i = 0; i < 15;i++) {
-		for (int j = 0; j < 15;j++) {
-			field.push_back(new Plant({ -32+i,-1.0f, 10+j }, "F[-X][X]F[-X]+FX", "FF", 25.0f, "X"));
+	depth = new DoF(depth_program);
+	plant1 = new Plant({ -26.0f,-1.0f, 60.0f }, "F-[+FX]+F[-XFX]+F[-FX]","FF", 45.0f, glm::vec3({ 0.15f,0.3f,0 }));
+	plant2 = new Plant({ 36.0f,-1.0f, 190.0f }, "F-[+FX]+F[-XFX]+F[-FX]", "FF", 45.0f, glm::vec3({ 0.15f,0.3f,0 }));
+	plant3 = new Plant({ 36.0f,-1.0f, 190.0f }, "F", "FF-[-FF+F]+[+F-F]", 50.0f, glm::vec3({ 0.05f,0.1f,0 }));
+	plant4 = new Plant({ 36.0f,-1.0f, 190.0f }, "F[-X][X]F[-X]+FX", "FF", 25.0f, "X");
+	tooning = true;
+	dof = true;
+	for (int i = 0; i < 5;i++) {
+		for (int j = 0; j < 5;j++) {
+			float x_val = (float)(rand() % 90 - 45);
+			float z_val = (float)(rand() % 30500-2000) / 100;
+			field.push_back(new Plant({ x_val,-1.0f, z_val }, "F[-X][X]F[-X]+FX", "FF", 25.0f, "X"));
 		}
 	}
-	for (int i = 0; i < 3;i++) {
+	for (int i = 0; i < 2;i++) {
 		for (int j = 0; j < 3;j++) {
-			field.push_back(new Plant({ 25 + 5*i,-1.0f, 30 + 5*j }, "F", "FF-[-FF+F]+[+F-F]", 50.0f));
+			float x_val = (float)(rand() % 90 - 45);
+			float z_val = (float)(rand() % 16000 - 3000)/100;
+			field.push_back(new Plant({ x_val,-1.0f, z_val }, "F", "FF-[-FF+F]+[+F-F]", 50.0f, glm::vec3({ 0.05f,0.1f,0 })));
 		}
 	}
 }
@@ -183,8 +191,9 @@ void Window::idle_callback()
 	int detector3 = bull->box->detectCollision(stone2->box);
 	int detector4 = bull->box->detectCollision(stone3->box);
 	int detector5 = bull->box->detectCollision(stone4->box);
-	if (detector2 + detector3+ detector4+ detector5 != 0) {
-		cam_pos = { 8.0f, 25.0f, -40.0f };		// e  | Position of camera
+	int detector6 = bull->box->detectCollision(stone5->box);
+	if (detector2 + detector3+ detector4+ detector5 + detector6 != 0) {
+		cam_pos = { 8.0f, 40.0f, -40.0f };		// e  | Position of camera
 		cam_look_at = { 0.0f, 0.0f, 0.0f };	// d  | This is where the camera looks at
 		bull->translate(-bull->offset);
 		pe->translation = { 0,0,0 };
@@ -203,21 +212,23 @@ void Window::display_callback(GLFWwindow* window)
 {
 	V = glm::lookAt(cam_pos, cam_look_at, cam_up);
 	glClearColor(0,0,0, 1.0);
-
-	//depth->bindFrameBuffer();
+	if (dof) {
+		depth->bindFrameBuffer();
+	}
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// Clear the color and depth buffers
 	glUseProgram(particle_program);
 	pe->draw(particle_program);
 	// Use the shader of programID
 	glUseProgram(shaderProgram);
-	bull->draw(shaderProgram);
-	ground->draw(shaderProgram);
-	curtain_->draw(shaderProgram);
-	stone1->draw(shaderProgram);
-	stone2->draw(shaderProgram);
-	stone3->draw(shaderProgram);
-	stone4->draw(shaderProgram);
+	bull->draw(shaderProgram, tooning);
+	ground->draw(shaderProgram, tooning);
+	curtain_->draw(shaderProgram, tooning);
+	stone1->draw(shaderProgram, tooning);
+	stone2->draw(shaderProgram, tooning);
+	stone3->draw(shaderProgram, tooning);
+	stone4->draw(shaderProgram, tooning);
+	stone5->draw(shaderProgram, tooning);
 	if (debug) {
 		glUseProgram(box_program);
 		glLineWidth(1.0f);
@@ -225,19 +236,22 @@ void Window::display_callback(GLFWwindow* window)
 		stone2->box->draw(box_program);
 		stone3->box->draw(box_program);
 		stone4->box->draw(box_program);
+		stone5->box->draw(box_program);
 		bull->box->draw(box_program);
-		ground->box->draw(box_program);
 		curtain_->box->draw(box_program);
 	}
 	glUseProgram(plant_program);
 	plant1->draw(plant_program);
+	plant2->draw(plant_program);
+	//plant4->draw(plant_program);
 	for (auto p : field) {
 		p->draw(plant_program);
 	}
 	glUseProgram(skybox_shaderProgram);
 	sky->draw(skybox_shaderProgram);
-
-	//depth->dof_post_processing(depth_program);
+	if (dof) {
+		depth->dof_post_processing(depth_program);
+	}
 
 	// Gets events, including input such as keyboard and mouse or window resizing
 	glfwPollEvents();
@@ -264,6 +278,12 @@ void Window::key_callback(GLFWwindow* window, int key, int scancode, int action,
 		}
 		if (key == GLFW_KEY_I) {
 			depth->increase_focus();
+		}
+		if (key == GLFW_KEY_1) {
+			dof = !dof;
+		}
+		if (key == GLFW_KEY_2) {
+			tooning = !tooning;
 		}
 	}
 	if (action != GLFW_RELEASE) {

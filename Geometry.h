@@ -35,7 +35,7 @@ public:
 	Geometry(const char *filepath, glm::vec3 color, float angle, glm::vec3 move, int toon);
 	~Geometry();
 	void calculate_normals();
-	void draw(int program);
+	void draw(int program, bool tooning);
 	void parse(const char *filepath);
 	void setup();
 	void update();
